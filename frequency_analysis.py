@@ -79,9 +79,9 @@ def getTopFrequencies(text, count=NUM_TOP_FREQS):
 	triples = dict(list(getTriplesFrequencies(text).items())[:count])
 
 	return {
-		'singles': (singles),
-		'doubles': (doubles),
-		'triples': (triples),
+		'singles': singles,
+		'doubles': doubles,
+		'triples': triples,
 	}
 
 def printTopFrequencies(text="", freqs=None):
