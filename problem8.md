@@ -34,4 +34,4 @@ Include the plaintext of the ciphertext.
 
 Include your full code in the write up, with line numbers, and comments. Explain how your code works as part of the write up. If this part is missing then, no points will be awarded. You should use only the code you wrote to conduct the frequency analysis and not other services -- you will get ZERO credit if the code you turned in is not your own and does not do the above.  
 
-Summary: you will turn in your code, the output of your code when run with the sample text, the output of your code run against the ciphertext, and the plaintext you discover from this  exercise.  
+Summary: you will turn in your code, the output of your code when run with the sample text, the output of your code run against the ciphertext, and the plaintext you discover from this exercise.  

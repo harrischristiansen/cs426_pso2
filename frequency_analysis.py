@@ -5,7 +5,6 @@
 	Problem 8 - Frequency Analysis
 '''
 
-from collections import Counter
 import re, string
 
 TEXT_DENY_PATTERN = re.compile('[^a-zA-Z]+')
@@ -27,53 +26,62 @@ def formatText(text): # Return only [A-Z] in uppercase text
 
 ################# Single Character Frequency Analysis #################
 
+def getFrequencies(items):
+	counts = {}
+	for item in items:
+		value = ''.join(item)
+		if value in counts:
+			counts[value] += 1
+		else:
+			counts[value] = 1
+	return dict(sorted(counts.items(), key=lambda k: counts[k[0]], reverse=True))
+
 def getSinglesFrequencies(text):
-	return Counter(text)
+	return getFrequencies(list(text))
 
 ################# Double Character Frequency Analysis #################
 
 def getDoubles(text):
+	doubles = []
 	for i, v in enumerate(text):
 		try:
-			yield v, text[i + 1]
+			double = (v, text[i + 1])
+			doubles.append(double)
 		except IndexError:
-			return
+			return doubles
+	return doubles
 
 def getDoublesFrequencies(text):
 	doubles = getDoubles(text)
-	return Counter(doubles)
+	return getFrequencies(doubles)
 
 ################# Triple Character Frequency Analysis #################
 
 def getTriples(text):
+	triples = []
 	for i, v in enumerate(text):
 		try:
-			yield v, text[i + 1], text[i + 2]
+			triple = v, text[i + 1], text[i + 2]
+			triples.append(triple)
 		except IndexError:
-			return
+			return triples
+	return triples
 
 def getTriplesFrequencies(text):
 	triples = getTriples(text)
-	return Counter(triples)
+	return getFrequencies(triples)
 
 ################# Complete Frequency Analysis #################
 
-def getDictFromFreqs(freqs):
-	result = {}
-	for freq in freqs:
-		text = ''.join(freq[0])
-		result[text] = freq[1]
-	return result
-
 def getTopFrequencies(text, count=NUM_TOP_FREQS):
-	singles = getSinglesFrequencies(text).most_common(count)
-	doubles = getDoublesFrequencies(text).most_common(count)
-	triples = getTriplesFrequencies(text).most_common(count)
+	singles = dict(list(getSinglesFrequencies(text).items())[:count])
+	doubles = dict(list(getDoublesFrequencies(text).items())[:count])
+	triples = dict(list(getTriplesFrequencies(text).items())[:count])
 
 	return {
-		'singles': getDictFromFreqs(singles),
-		'doubles': getDictFromFreqs(doubles),
-		'triples': getDictFromFreqs(triples),
+		'singles': (singles),
+		'doubles': (doubles),
+		'triples': (triples),
 	}
 
 def printTopFrequencies(text="", freqs=None):
@@ -84,11 +92,39 @@ def printTopFrequencies(text="", freqs=None):
 	print("Doubles: %s" % freqs["doubles"])
 	print("Triples: %s" % freqs["triples"])
 
+################# Decipher #################
+
+def getListSingleFreqs(text):
+	freqs = getSinglesFrequencies(text)
+	return list(freqs.keys())
+
+def createFreqReplacementMap(source_freqs, target_freqs):
+	replacements = {}
+	for i, freq in enumerate(source_freqs):
+		replacements[freq] = target_freqs[i]
+	return replacements
+
+def replaceBySingleFreq(text, target_freqs):
+	freqs = getListSingleFreqs(text)
+	replacements = createFreqReplacementMap(freqs, target_freqs)
+	#print(replacements)
+
+	result = ""
+	for c in text:
+		result += replacements[c]
+
+	return result
+
 ################# Main #################
 
 if __name__ == '__main__':
 	plaintext = formatText(getPlaintext())
-	printTopFrequencies(plaintext)
+	#printTopFrequencies(plaintext)
 
 	ciphertext = getCiphertext()
-	printTopFrequencies(ciphertext)
+	#printTopFrequencies(ciphertext)
+
+	#target_freqs = getListSingleFreqs(plaintext) # ['E', 'T', 'O', 'A', 'I', 'S', 'N', 'R', 'H', 'L', 'D', 'U', 'M', 'Y', 'C', 'W', 'F', 'G', 'B', 'P', 'K', 'V', 'X', 'J', 'Q', 'Z']
+	target_freqs = ['E', 'T', 'A', 'O', 'H', 'R', 'N', 'D', 'I', 'L', 'S', 'W', 'C', 'V', 'F', 'U', 'G', 'B', 'M', 'P', 'Y', 'K']
+	deciphered_text = replaceBySingleFreq(ciphertext, target_freqs)
+	print(deciphered_text)
